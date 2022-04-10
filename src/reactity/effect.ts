@@ -23,7 +23,7 @@ class ReactiveEffect {
   run(){
     // 将当前执行的effect保存到全局变量上，便于添加依赖
     activeEffect = this
-    this._fn()
+    return this._fn()
   }
 }
 
@@ -31,7 +31,7 @@ class ReactiveEffect {
 export function effect(fn) {
   let _effect = new ReactiveEffect(fn)
   _effect.run()
-  return _effect
+  return _effect.run.bind(_effect)
 }
 
 export function track(target, key) {
