@@ -1,6 +1,12 @@
 import { extend } from '../../src/util'
 // activeEffect用于保存当前正在生效的effect
 let activeEffect;
+// 用于标志当前effect是否需要收集
+let shouldTrack;
+
+export function isTracking(){
+  return shouldTrack && activeEffect
+}
 
 // targetMap: {
 //   obj1: {
@@ -26,9 +32,17 @@ class ReactiveEffect {
     this.scheduler = scheduler;
   }
   run() {
+    if (!this.active){
+      return this._fn()
+    }
+    
+    shouldTrack = true
     // 将当前执行的effect保存到全局变量上，便于添加依赖
     activeEffect = this;
-    return this._fn();
+    const res = this._fn();
+    shouldTrack = false
+
+    return res
   }
   stop() {
     if (this.active) {
@@ -45,6 +59,7 @@ function cleanUpEffect(effect: any) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect);
   });
+  effect.deps.length = 0
 }
 
 export function effect(fn, options: any = {}) {
@@ -57,6 +72,8 @@ export function effect(fn, options: any = {}) {
 }
 
 export function track(target, key) {
+  if (!isTracking()) return
+
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     depsMap = new Map();
@@ -68,11 +85,13 @@ export function track(target, key) {
     dep = new Set();
     depsMap.set(key, dep);
   }
-
-  if (!activeEffect) return
+  
+  if (dep.has(activeEffect)) return
   dep.add(activeEffect);
   activeEffect.deps.push(dep);
 }
+
+
 
 export function trigger(target, key) {
   let depsMap = targetMap.get(target);

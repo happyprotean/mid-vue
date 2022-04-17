@@ -70,12 +70,14 @@ describe("effect", () => {
 
     // 停止自动触发依赖
     stop(runner)
-    obj.prop = 0
+    obj.prop = 3
+    expect(dummy).toBe(2)
+    obj.prop++ // stop的边缘情况：同时触发get和set
     expect(dummy).toBe(2)
 
     // 但是依然可以手动触发依赖
     runner()
-    expect(dummy).toBe(0)
+    expect(dummy).toBe(4)
   })
 
   test("onStop", () => {
