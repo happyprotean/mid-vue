@@ -1,4 +1,4 @@
-import { effect } from "../effect";
+import { effect, stop } from "../effect";
 import { reactive } from "../reactive";
 
 describe("effect", () => {
@@ -55,8 +55,26 @@ describe("effect", () => {
     expect(scheduler).toHaveBeenCalledTimes(1)
     expect(dummy).toBe(1)
 
-    // 通过runner，手动调用effect中的fn
+    // 通过runner，可以手动触发依赖
     run()
     expect(dummy).toBe(2)
+  });
+  test("stop", () => {
+    let dummy
+    const obj = reactive({ prop: 1 })
+    const runner = effect(() => {
+      dummy = obj.prop
+    })
+    obj.prop = 2
+    expect(dummy).toBe(2)
+
+    // 停止自动触发依赖
+    stop(runner)
+    obj.prop = 0
+    expect(dummy).toBe(2)
+
+    // 但是依然可以手动触发依赖
+    runner()
+    expect(dummy).toBe(0)
   })
 });

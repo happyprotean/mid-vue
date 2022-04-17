@@ -16,20 +16,38 @@ let targetMap = new Map();
 
 class ReactiveEffect {
   private _fn: any;
-  constructor(fn, public scheduler?) {
+  public scheduler: Function | undefined;
+  deps = [];
+  active = true;
+  constructor(fn, scheduler?: Function) {
     this._fn = fn;
+    this.scheduler = scheduler;
   }
   run() {
     // 将当前执行的effect保存到全局变量上，便于添加依赖
     activeEffect = this;
     return this._fn();
   }
+  stop() {
+    if (this.active) {
+      clearEffect(this);
+      this.active = false;
+    }
+  }
+}
+
+function clearEffect(effect: any) {
+  effect.deps.forEach((dep: any) => {
+    dep.delete(effect);
+  });
 }
 
 export function effect(fn, options: any = {}) {
   let _effect = new ReactiveEffect(fn, options.scheduler);
   _effect.run();
-  return _effect.run.bind(_effect);
+  const runner: any = _effect.run.bind(_effect);
+  runner.effect = _effect;
+  return runner;
 }
 
 export function track(target, key) {
@@ -39,23 +57,29 @@ export function track(target, key) {
     targetMap.set(target, depsMap);
   }
 
-  let deps = depsMap.get(key);
-  if (!deps) {
-    deps = new Set();
-    depsMap.set(key, deps);
+  let dep = depsMap.get(key);
+  if (!dep) {
+    dep = new Set();
+    depsMap.set(key, dep);
   }
 
-  deps.add(activeEffect);
+  dep.add(activeEffect);
+  activeEffect.deps.push(dep);
 }
 
 export function trigger(target, key) {
   let depsMap = targetMap.get(target);
-  let deps = depsMap.get(key);
-  for (const dep of deps) {
-    if (dep.scheduler) {
-      dep.scheduler();
+  let dep = depsMap.get(key);
+  for (const effect of dep) {
+    if (effect.scheduler) {
+      effect.scheduler();
     } else {
-      dep.run();
+      effect.run();
     }
   }
+}
+
+export function stop(runner) {
+  const effect = runner.effect;
+  effect.stop();
 }
