@@ -1,4 +1,4 @@
-import { reactive, readonly, isReactive } from "../reactive";
+import { reactive, readonly, isReactive, isProxy } from "../reactive";
 describe("reactive", () => {
   test("happy path", () => {
     const original = { foo: 1 };
@@ -7,6 +7,7 @@ describe("reactive", () => {
     expect(observed.foo).toBe(1);
     expect(isReactive(observed)).toBe(true);
     expect(isReactive(original)).toBe(false);
+    expect(isProxy(observed)).toBe(true);
   });
 
   test("warn then call set", () => {
