@@ -67,9 +67,12 @@ describe("effect", () => {
     obj.foo = 3
     expect(dummy).toBe(2)
 
+    obj.foo++
+    expect(dummy).toBe(2)
+
     // stoped effect should still be manully callable
     runner()
-    expect(dummy).toBe(3)
+    expect(dummy).toBe(4)
   })
   
   test('onStop', () => { 

@@ -2,6 +2,8 @@ import { extend } from '../shared'
 
 // 全局变量，用于保存当前effect，便于收集依赖
 let activeEffect
+let shouldTrack = false
+const targetMap = new Map()
 
 class ReactiveEffect {
   private _fn: any
@@ -16,8 +18,16 @@ class ReactiveEffect {
   }
 
   run() {
+    // effect被stop
+    if (!this.active) {
+      return this._fn()
+    }
+
+    // effect未被stop
     activeEffect = this
+    shouldTrack = true
     const res = this._fn()
+    shouldTrack = false
     return res
   }
 
@@ -34,11 +44,17 @@ export function cleanupEffect(effect) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect)
   })
+  effect.deps.length = 0
 }
 
-const targetMap = new Map()
+function isTracking() {
+  return shouldTrack && activeEffect !== undefined
+}
+
 
 export function track(target, key) {
+  if (!isTracking()) return
+
   // target -> key -> dep
   let depsMap = targetMap.get(target)
   if (!depsMap) {
@@ -53,7 +69,7 @@ export function track(target, key) {
     depsMap.set(key, dep)
   }
 
-  if (!activeEffect) return
+  if (dep.has(activeEffect)) return
 
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
