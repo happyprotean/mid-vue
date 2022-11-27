@@ -5,7 +5,7 @@ let activeEffect
 let shouldTrack = false
 const targetMap = new Map()
 
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: any
   public scheduler: Function | undefined
   deps = []
