@@ -1,5 +1,5 @@
 import { effect } from '../effect'
-import { ref, isRef, unRef } from '../ref'
+import { ref, isRef, unRef, proxyRefs } from '../ref'
 import { reactive } from '../reactive'
 describe('ref', () => {
   test('happy path', () => {
@@ -58,5 +58,24 @@ describe('ref', () => {
     expect(unRef(a)).toBe(1)
     expect(unRef(1)).toBe(1)
     expect(unRef(b)).toBe(obj)
+  })
+
+  test("proxyRefs", () => {
+    const user = {
+      age: ref(10),
+      name: 'xiao',
+    }
+    const proxyUser = proxyRefs(user)
+    expect(user.age.value).toBe(10)
+    expect(proxyUser.age).toBe(10)
+    expect(proxyUser.name).toBe('xiao')
+
+    proxyUser.age = 20
+    expect(proxyUser.age).toBe(20)
+    expect(user.age.value).toBe(20)
+
+    proxyUser.age = ref(11)
+    expect(proxyUser.age).toBe(11)
+    expect(user.age.value).toBe(11)
   })
 })
