@@ -1,16 +1,20 @@
 import { h } from '../../lib/mid-vue.esm.js'
 
+window.self = null
 export const App = {
-
   render() {
-    return h('div', {
-      id: 'root',
-      class: ['red', 'hard'],
-    },
-    [
-      h('p', { class: 'red' }, 'hello'),
-      h('p', { class: 'blue' }, 'mid-vue'),
-    ])
+    window.self = this
+    return h(
+      'div',
+      {
+        id: 'root',
+        class: ['red', 'hard'],
+      },
+      // setupState
+      // this.$el
+      'hi ' + this.msg
+      // [h('p', { class: 'red' }, 'hello'), h('p', { class: 'blue' }, 'mid-vue')]
+    )
   },
 
   setup() {
