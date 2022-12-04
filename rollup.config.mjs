@@ -4,11 +4,11 @@ export default {
   output: [
     {
       format: 'cjs',
-      file: 'lib/mid-vue.esm.js',
+      file: 'lib/mid-vue.cjs.js',
     },
     {
       format: 'es',
-      file: 'lib/mid-vue.cjs.js',
+      file: 'lib/mid-vue.esm.js',
     },
   ],
   plugins: [
