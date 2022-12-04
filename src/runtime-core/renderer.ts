@@ -8,6 +8,8 @@ export function render(vnode, container) {
 
 function patch(vnode, container) {
   // 处理组件
+  // TODO: 判断vnode是否为element
+  // processElement()
   processComponent(vnode, container)
 }
 
