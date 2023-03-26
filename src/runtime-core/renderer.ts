@@ -1,4 +1,5 @@
 import { isObject } from '../shared/index'
+import { SHAPE_FLAGS } from '../shared/ShapeFlags'
 import { createComponentInstance, setupComponent } from './component'
 
 export function render(vnode, container) {
@@ -8,14 +9,10 @@ export function render(vnode, container) {
 
 function patch(vnode, container) {
   // 处理组件
-  /**
-   * 判断vnode是否为element
-   * element: 通过h函数创建，如h('div', {id: 'id'}, 'msg')
-   * component: 通过组件创建
-   */
-  if (typeof vnode.type === 'string') {
+  // 通过位运算 & 判断shapeFlag类型
+  if (vnode.shapeFlag & SHAPE_FLAGS.ELEMENT) {
     processElement(vnode, container)
-  } else if (isObject(vnode.type)) {
+  } else if (vnode.shapeFlag & SHAPE_FLAGS.STATEFUL_COMPONENT) {
     processComponent(vnode, container)
   }
 }
@@ -25,21 +22,19 @@ function processElement(vnode, container) {
 }
 
 function mountElement(vnode, container) {
-  const { type, props, children } = vnode
-  const el = document.createElement(type)
-  vnode.el = el
+  const { type, props, children, shapeFlag } = vnode
+  const el = (vnode.el = document.createElement(type))
+
+  if (shapeFlag & SHAPE_FLAGS.TEXT_CHILDREN) {
+    el.textContent = children
+  } else if (shapeFlag & SHAPE_FLAGS.ARRAY_CHILDREN) {
+    mountChildren(vnode, el)
+  }
 
   for (const key in props) {
     const val = props[key]
     el.setAttribute(key, val)
   }
-
-  if (typeof children === 'string') {
-    el.textContent = children
-  } else if (Array.isArray(children)) {
-    mountChildren(vnode, el)
-  }
-
   container.append(el)
 }
 
