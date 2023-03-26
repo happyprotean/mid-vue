@@ -7,3 +7,5 @@ export function isObject(value) {
 export function hasChanged(value, newValue) {
   return !Object.is(value, newValue) 
 }
+
+export const hasOwn = (val, key) => Object.prototype.hasOwnProperty.call(val, key)
