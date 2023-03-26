@@ -1,4 +1,3 @@
-import { isObject } from '../shared/index'
 import { SHAPE_FLAGS } from '../shared/ShapeFlags'
 import { createComponentInstance, setupComponent } from './component'
 
@@ -31,18 +30,23 @@ function mountElement(vnode, container) {
     mountChildren(vnode, el)
   }
 
+  const isOn = (key: string) => /^on[A-Z]/.test(key)
   for (const key in props) {
     const val = props[key]
-    el.setAttribute(key, val)
+    if (isOn(key)) {
+      const event = key.slice(2).toLowerCase()
+      el.addEventListener(event, val)
+    } else {
+      el.setAttribute(key, val)
+    }
   }
   container.append(el)
 }
 
 function mountChildren(vnode, container) {
-    vnode.children.forEach((item) => {
-      patch(item, container)
-    })
-
+  vnode.children.forEach((item) => {
+    patch(item, container)
+  })
 }
 
 function processComponent(vnode, container) {

@@ -9,6 +9,12 @@ export const App = {
       {
         id: 'root',
         class: ['red', 'hard'],
+        onClick: function() {
+          console.log('click')
+        },
+        onMousedown() {
+          console.log('mousedown')
+        }
       },
       // setupState
       // this.$el
