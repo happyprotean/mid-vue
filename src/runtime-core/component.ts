@@ -6,13 +6,15 @@ import { initSlots } from './componentSlot'
 
 let currentInstance = null
 
-export function createComponentInstance(vnode) {
+export function createComponentInstance(vnode, parent) {
   const component = {
     vnode,
     type: vnode.type,
     setupState: {},
     props: {},
     slots: {},
+    provides: parent ? parent.provides : {},
+    parent,
     emit: () => {},
   }
   // 绑定components参数，避免用户在调用emit时，额外的参数传递, 如emit(instance, event)
