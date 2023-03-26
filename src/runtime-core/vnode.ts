@@ -13,6 +13,14 @@ export function createVnode(type, props?, children?) {
   } else if(Array.isArray(children)) {
     vnode.shapeFlag |= SHAPE_FLAGS.ARRAY_CHILDREN
   }
+
+  // 组件类型且children为对象时，表示传入了slots
+  if (vnode.shapeFlag & SHAPE_FLAGS.STATEFUL_COMPONENT) {
+    if (typeof children === 'object') {
+      vnode.shapeFlag |= SHAPE_FLAGS.SLOT_CHILDREN
+    }
+  }
+
   return vnode
 }
 
