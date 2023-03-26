@@ -1,5 +1,6 @@
 import { SHAPE_FLAGS } from '../shared/ShapeFlags'
 import { createComponentInstance, setupComponent } from './component'
+import { Fragment } from './vnode'
 
 export function render(vnode, container) {
   // patch
@@ -9,10 +10,18 @@ export function render(vnode, container) {
 function patch(vnode, container) {
   // 处理组件
   // 通过位运算 & 判断shapeFlag类型
-  if (vnode.shapeFlag & SHAPE_FLAGS.ELEMENT) {
-    processElement(vnode, container)
-  } else if (vnode.shapeFlag & SHAPE_FLAGS.STATEFUL_COMPONENT) {
-    processComponent(vnode, container)
+  const { type, shapeFlag } = vnode
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container)
+      break
+    default:
+      if (shapeFlag & SHAPE_FLAGS.ELEMENT) {
+        processElement(vnode, container)
+      } else if (shapeFlag & SHAPE_FLAGS.STATEFUL_COMPONENT) {
+        processComponent(vnode, container)
+      }
+      break
   }
 }
 
@@ -68,3 +77,7 @@ function setupRenderEffect(instance, initialVnode, container) {
   patch(subTree, container)
   initialVnode.el = subTree.el
 }
+function processFragment(vnode: any, container: any) {
+  mountChildren(vnode, container)
+}
+
