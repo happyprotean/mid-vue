@@ -1,6 +1,6 @@
 export const extend = Object.assign
 
-export const EMPTY_OBJECT = {}
+export const EMPTY_OBJ = {}
 
 export function isObject(value) {
   return value && typeof value === 'object'
