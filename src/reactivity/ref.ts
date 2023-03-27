@@ -19,8 +19,7 @@ class RefImpl {
   }
 
   set value(newValue) {
-    // 新值不等于旧值时，触发依赖
-    if (hasChanged(this._rawValue, newValue)) {
+    if (hasChanged(newValue, this._rawValue)) {
       this._rawValue = newValue
       this._value = convert(newValue)
       triggerEffects(this.dep)
@@ -28,8 +27,8 @@ class RefImpl {
   }
 }
 
-export function ref(value) {
-  return new RefImpl(value)
+function convert(value) {
+  return isObject(value) ? reactive(value) : value
 }
 
 function trackRefValue(ref) {
@@ -38,31 +37,30 @@ function trackRefValue(ref) {
   }
 }
 
-function convert(value) {
-  return isObject(value) ? reactive(value) : value
+export function ref(value) {
+  return new RefImpl(value)
 }
 
 export function isRef(ref) {
-  return !!(ref && ref.__v_isRef) 
+  return !!ref.__v_isRef
 }
 
 export function unRef(ref) {
-  return isRef(ref)
-    ? (isObject(ref.value) ? ref._rawValue : ref.value )
-    : ref
+  return isRef(ref) ? ref.value : ref;
 }
 
-export function proxyRefs(object) {
-  return new Proxy(object, {
+export function proxyRefs(objectWithRefs) {
+  return new Proxy(objectWithRefs, {
     get(target, key) {
       return unRef(Reflect.get(target, key))
     },
+
     set(target, key, value) {
       if (isRef(target[key]) && !isRef(value)) {
-        return target[key].value = value
+        return (target[key].value = value)
       } else {
         return Reflect.set(target, key, value)
       }
-    }
+    },
   })
 }

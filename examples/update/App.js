@@ -1,4 +1,4 @@
-import { h, ref, reactive } from '../../lib/mid-vue.esm.js'
+import { h, ref } from '../../lib/mid-vue.esm.js'
 
 export const App = {
   name: 'App',
@@ -13,18 +13,10 @@ export const App = {
       bar: 'bar',
     })
     const onChangePropsDemo1 = () => {
-      // TODO: props.value.foo直接更改的话，没有触发effect
-      // props.value.foo = 'new-foo'
-      props.value = {
-        foo: 'new-foo',
-        bar: 'bar',
-      }
+      props.value.foo = 'new-foo'
     }
     const onChangePropsDemo2 = () => {
-      props.value = {
-        foo: undefined,
-        bar: 'bar',
-      }
+      props.value.foo = undefined
     }
     const onChangePropsDemo3 = () => {
       props.value = {
@@ -42,7 +34,6 @@ export const App = {
   },
 
   render() {
-    console.log('props', this.props)
     return h(
       'div',
       {
