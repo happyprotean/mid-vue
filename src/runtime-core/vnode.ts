@@ -1,4 +1,4 @@
-import { SHAPE_FLAGS } from "../shared/ShapeFlags"
+import { ShapeFlags } from "../shared/ShapeFlags"
 
 export const Fragment = Symbol('Fragment')
 export const Text = Symbol('Text')
@@ -13,15 +13,15 @@ export function createVnode(type, props?, children?) {
     shapeFlag: getShapeFlag(type),
   }
   if (typeof children === 'string') {
-    vnode.shapeFlag |=  SHAPE_FLAGS.TEXT_CHILDREN
+    vnode.shapeFlag |=  ShapeFlags.TEXT_CHILDREN
   } else if(Array.isArray(children)) {
-    vnode.shapeFlag |= SHAPE_FLAGS.ARRAY_CHILDREN
+    vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN
   }
 
   // 组件类型且children为对象时，表示传入了slots
-  if (vnode.shapeFlag & SHAPE_FLAGS.STATEFUL_COMPONENT) {
+  if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
     if (typeof children === 'object') {
-      vnode.shapeFlag |= SHAPE_FLAGS.SLOT_CHILDREN
+      vnode.shapeFlag |= ShapeFlags.SLOT_CHILDREN
     }
   }
 
@@ -33,5 +33,5 @@ export function createTextVNode(text: string) {
 }
 
 export function getShapeFlag(type) {
-  return typeof type === 'string' ? SHAPE_FLAGS.ELEMENT : SHAPE_FLAGS.STATEFUL_COMPONENT
+  return typeof type === 'string' ? ShapeFlags.ELEMENT : ShapeFlags.STATEFUL_COMPONENT
 }

@@ -5,7 +5,7 @@
  * text_children: 子元素为文本
  * array_children: 子元素为数组
  */
-export const enum SHAPE_FLAGS {
+export const enum ShapeFlags {
   ELEMENT = 1, // 0001
   STATEFUL_COMPONENT = 1 << 1, // 0010
   TEXT_CHILDREN = 1 << 2, // 0100
