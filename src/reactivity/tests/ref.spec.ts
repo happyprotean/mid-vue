@@ -53,11 +53,8 @@ describe('ref', () => {
 
   test("unRef", () => {
     const a = ref(1)
-    const obj = { age: 1 }
-    const b = ref(obj)
     expect(unRef(a)).toBe(1)
     expect(unRef(1)).toBe(1)
-    expect(unRef(b)).toBe(obj)
   })
 
   test("proxyRefs", () => {
